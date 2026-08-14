@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Sampel Media Interaktif Transformasi Geometri</title>
+  <style>
+    :root {
+      --bg: #eef4ff;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #dbe5f3;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --soft: #eff6ff;
+      --shadow: 0 16px 50px rgba(15, 23, 42, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, .12), transparent 28rem),
+        linear-gradient(180deg, #f8fbff 0%, var(--bg) 100%);
+    }
+
+    body { min-height: 100vh; }
+
+    button, iframe { font: inherit; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 24px;
+      background: rgba(255,255,255,.9);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      color: white;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, .25);
+      flex: 0 0 auto;
+      font-size: 23px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(16px, 2vw, 22px);
+      line-height: 1.2;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .icon-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: .2s ease;
+      font-size: 18px;
+    }
+
+    .icon-btn:hover {
+      background: var(--soft);
+      border-color: #b9d1f9;
+      transform: translateY(-1px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 290px minmax(0, 1fr);
+      min-height: 0;
+      height: calc(100vh - 83px);
+    }
+
+    .sidebar {
+      border-right: 1px solid var(--line);
+      background: rgba(255,255,255,.78);
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .sidebar-label {
+      margin: 2px 8px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .menu {
+      display: grid;
+      gap: 8px;
+    }
+
+    .menu-btn {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink);
+      padding: 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 11px;
+      align-items: center;
+      text-align: left;
+      transition: .2s ease;
+    }
+
+    .menu-btn:hover {
+      background: #f8fbff;
+      border-color: var(--line);
+    }
+
+    .menu-btn.active {
+      background: var(--soft);
+      border-color: #bcd4ff;
+      box-shadow: inset 3px 0 0 var(--primary);
+    }
+
+    .menu-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-size: 18px;
+    }
+
+    .menu-text strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+
+    .menu-text span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .content {
+      min-width: 0;
+      min-height: 0;
+      padding: 18px;
+    }
+
+    .viewer-card {
+      height: 100%;
+      min-height: 440px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .viewer-head {
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .viewer-title {
+      min-width: 0;
+    }
+
+    .viewer-title .eyebrow {
+      font-size: 11px;
+      color: var(--primary);
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: .08em;
+      margin-bottom: 3px;
+    }
+
+    .viewer-title h2 {
+      font-size: 15px;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, .12);
+    }
+
+    .frame-wrap {
+      position: relative;
+      min-height: 0;
+      background: #f8fafc;
+    }
+
+    #mediaFrame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      background: #fff;
+    }
+
+    .loader {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(248,250,252,.92);
+      z-index: 5;
+      transition: opacity .25s ease, visibility .25s ease;
+    }
+
+    .loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .spinner-box {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 4px solid #dbeafe;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .mobile-menu {
+      display: none;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      height: 42px;
+      padding: 0 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .drawer-backdrop { display: none; }
+
+    @media (max-width: 860px) {
+      .topbar { padding: 12px 14px; }
+      .brand-mark { width: 42px; height: 42px; border-radius: 12px; }
+      .brand h1 {
+        white-space: normal;
+        font-size: 15px;
+        max-width: 62vw;
+      }
+      .brand p { font-size: 12px; }
+      .layout {
+        grid-template-columns: 1fr;
+        height: calc(100vh - 67px);
+      }
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        left: 0;
+        top: 67px;
+        bottom: 0;
+        width: min(86vw, 320px);
+        transform: translateX(-102%);
+        transition: transform .25s ease;
+        box-shadow: 20px 0 50px rgba(15,23,42,.18);
+        background: #fff;
+      }
+      .sidebar.open { transform: translateX(0); }
+      .drawer-backdrop {
+        position: fixed;
+        z-index: 45;
+        inset: 67px 0 0;
+        background: rgba(15,23,42,.35);
+      }
+      .drawer-backdrop.show { display: block; }
+      .mobile-menu { display: inline-flex; align-items: center; gap: 6px; }
+      .content { padding: 10px; }
+      .viewer-card { border-radius: 16px; }
+      .status { display: none; }
+      .top-actions .icon-btn:first-child { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .brand-mark { display: none; }
+      .brand h1 { max-width: 55vw; }
+      .viewer-head { min-height: 58px; }
+      .content { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">∑</div>
+        <div>
+          <h1>Sampel Media Interaktif Transformasi Geometri</h1>
+          <p>by Mathnology</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="mobile-menu" id="menuToggle" type="button" aria-label="Buka menu">☰ Menu</button>
+        <button class="icon-btn" id="reloadBtn" type="button" title="Muat ulang media" aria-label="Muat ulang media">↻</button>
+        <button class="icon-btn" id="fullscreenBtn" type="button" title="Layar penuh" aria-label="Layar penuh">⛶</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="sidebar" id="sidebar" aria-label="Daftar media pembelajaran">
+        <div class="sidebar-label">Daftar Media</div>
+        <div class="menu" id="mediaMenu"></div>
+      </aside>
+
+      <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+      <section class="content">
+        <div class="viewer-card" id="viewerCard">
+          <div class="viewer-head">
+            <div class="viewer-title">
+              <div class="eyebrow">Media Interaktif</div>
+              <h2 id="activeTitle">Pengertian Transformasi</h2>
+            </div>
+            <div class="status" aria-label="Status media">
+              <span class="dot"></span>
+              Ditampilkan di dalam aplikasi
+            </div>
+          </div>
+
+          <div class="frame-wrap">
+            <div class="loader" id="loader">
+              <div class="spinner-box">
+                <div class="spinner"></div>
+                <div>Memuat media interaktif…</div>
+              </div>
+            </div>
+
+            <iframe
+              id="mediaFrame"
+              title="Media interaktif transformasi geometri"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-pointer-lock allow-downloads"
+              allow="fullscreen"
+              referrerpolicy="no-referrer"
+            ></iframe>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // URL sumber sengaja tidak ditampilkan di antarmuka.
+    // Seluruh media dibuka di iframe yang sama, bukan tab/window baru.
+    const mediaItems = [
+      {
+        title: "Pengertian Transformasi",
+        subtitle: "Konsep dasar transformasi",
+        icon: "✦",
+        src: "https://dosen-uinsi.github.io/Simulasi-Pengertian-Transformasi/"
+      },
+      {
+        title: "Koordinat Kartesius",
+        subtitle: "Eksplorasi bidang koordinat",
+        icon: "⌗",
+        src: "https://dosen-uinsi.github.io/Simulasi-Koordinat-Kartesius/"
+      },
+      {
+        title: "Hafalan Sudut Istimewa",
+        subtitle: "Trigonometri interaktif",
+        icon: "∠",
+        src: "https://dosen-uinsi.github.io/Simulasi-Hafalan-Sudut-Istimewa/"
+      },
+      {
+        title: "Simulasi Matriks",
+        subtitle: "Matriks untuk transformasi",
+        icon: "▦",
+        src: "https://dosen-uinsi.github.io/Simulasi-Matriks/"
+      },
+      {
+        title: "Catur Translasi",
+        subtitle: "Misi translasi berbasis permainan",
+        icon: "♞",
+        src: "https://dosen-uinsi.github.io/Simulasi-Catur-Translasi/"
+      },
+      {
+        title: "Hudoq Translasi",
+        subtitle: "Translasi dalam konteks budaya",
+        icon: "◆",
+        src: "https://dosen-uinsi.github.io/Simulasi-Hudoq-Translasi/"
+      },
+      {
+        title: "Lab Refleksi",
+        subtitle: "Eksplorasi pencerminan",
+        icon: "◫",
+        src: "https://dosen-uinsi.github.io/Simulasi-Refleksi/"
+      },
+      {
+        title: "Alat Peraga Refleksi",
+        subtitle: "Media refleksi & matriks",
+        icon: "◩",
+        src: "https://dosen-uinsi.github.io/Simulasi-Alat-Peraga-Refleksi/"
+      }
+    ];
+
+    const frame = document.getElementById("mediaFrame");
+    const menu = document.getElementById("mediaMenu");
+    const title = document.getElementById("activeTitle");
+    const loader = document.getElementById("loader");
+    const sidebar = document.getElementById("sidebar");
+    const backdrop = document.getElementById("drawerBackdrop");
+
+    let activeIndex = 0;
+
+    function renderMenu() {
+      menu.innerHTML = "";
+      mediaItems.forEach((item, index) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "menu-btn" + (index === activeIndex ? " active" : "");
+        button.setAttribute("aria-label", "Buka " + item.title);
+
+        button.innerHTML = `
+          <span class="menu-icon" aria-hidden="true">${item.icon}</span>
+          <span class="menu-text">
+            <strong>${item.title}</strong>
+            <span>${item.subtitle}</span>
+          </span>
+        `;
+
+        button.addEventListener("click", () => loadMedia(index));
+        menu.appendChild(button);
+      });
+    }
+
+    function loadMedia(index) {
+      activeIndex = index;
+      const item = mediaItems[index];
+
+      loader.classList.remove("hidden");
+      title.textContent = item.title;
+      frame.title = item.title;
+      frame.src = item.src;
+
+      renderMenu();
+      closeDrawer();
+    }
+
+    frame.addEventListener("load", () => {
+      window.setTimeout(() => loader.classList.add("hidden"), 180);
+    });
+
+    document.getElementById("reloadBtn").addEventListener("click", () => {
+      const current = frame.src;
+      if (!current) return;
+      loader.classList.remove("hidden");
+      frame.src = current;
+    });
+
+    document.getElementById("fullscreenBtn").addEventListener("click", async () => {
+      const card = document.getElementById("viewerCard");
+      try {
+        if (!document.fullscreenElement) {
+          await card.requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (e) {
+        console.warn("Mode layar penuh tidak didukung browser ini.", e);
+      }
+    });
+
+    function openDrawer() {
+      sidebar.classList.add("open");
+      backdrop.classList.add("show");
+    }
+
+    function closeDrawer() {
+      sidebar.classList.remove("open");
+      backdrop.classList.remove("show");
+    }
+
+    document.getElementById("menuToggle").addEventListener("click", () => {
+      if (sidebar.classList.contains("open")) closeDrawer();
+      else openDrawer();
+    });
+
+    backdrop.addEventListener("click", closeDrawer);
+
+    // Muat media pertama ketika aplikasi dibuka.
+    renderMenu();
+    loadMedia(0);
+  </script>
+</body>
+</html>
